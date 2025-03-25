@@ -1,7 +1,3 @@
-// Azure API configuration
-const SUBSCRIPTION_KEY = "Fj1KPt7grC6bAkNja7daZUstpP8wZTXsV6Zjr2FOxkO7wsBQ5SzQJQQJ99BCACHYHv6XJ3w3AAAAACOGL3Xg";
-const REGION = "eastus2";
-const TRANSLATOR_ENDPOINT = "https://ai-aihackthonhub282549186415.cognitiveservices.azure.com/translator/text/v3.0/translate";
 
 // DOM elements
 const startBtn = document.getElementById('start-btn');
@@ -23,17 +19,52 @@ let audioContext = null;
 let audioProcessor = null;
 let audioAnalyser = null;
 
-// Initialize Azure API
-window.azureAPI = new DirectAzureAPI(
-  SUBSCRIPTION_KEY,
-  REGION,
-  TRANSLATOR_ENDPOINT
-);
-
-// Set up callbacks
-window.azureAPI.setCallbacks({
-  onFinalResult: handleFinalResult,
-  onError: handleApiError
+document.addEventListener('DOMContentLoaded', function() {
+  // Load API configuration from chrome.storage.sync
+  chrome.storage.sync.get(['subscriptionKey', 'region', 'translatorEndpoint'], function(items) {
+    // Check if the subscription key is provided
+    if (!items.subscriptionKey) {
+      statusDiv.textContent = "Please set your Azure API key in the extension settings.";
+      statusDiv.classList.add('error');
+      startBtn.disabled = true; // Optionally disable start functionality
+      return;
+    }
+    
+    // Initialize Azure API using stored values or fallback defaults
+    window.azureAPI = new DirectAzureAPI(
+      items.subscriptionKey,
+      items.region || "eastus2",
+      items.translatorEndpoint || "https://ai-aihackthonhub282549186415.cognitiveservices.azure.com/translator/text/v3.0/translate"
+    );
+    
+    // Set up callbacks
+    window.azureAPI.setCallbacks({
+      onFinalResult: handleFinalResult,
+      onError: handleApiError
+    });
+    
+    // Continue with loading language preferences, TTS settings, etc.
+    chrome.storage.sync.get(['fromLang', 'toLang', 'ttsEnabled'], function(result) {
+      if (result.fromLang) fromLangSelect.value = result.fromLang;
+      if (result.toLang) toLangSelect.value = result.toLang;
+      
+      const ttsEnabled = result.ttsEnabled !== undefined ? result.ttsEnabled : false;
+      ttsToggle.checked = ttsEnabled;
+      window.azureAPI.setTtsEnabled(ttsEnabled);
+    });
+  });
+  
+  // Connect to background script and set up event listeners as before
+  connectToBackground();
+  startBtn.addEventListener('click', startCapture);
+  stopBtn.addEventListener('click', stopCapture);
+  settingsButton.addEventListener('click', openSettings);
+  
+  ttsToggle.addEventListener('change', function() {
+    const enabled = ttsToggle.checked;
+    window.azureAPI.setTtsEnabled(enabled);
+    chrome.storage.sync.set({ ttsEnabled: enabled });
+  });
 });
 
 // Connect to the background script
@@ -57,38 +88,38 @@ function connectToBackground() {
   }
 }
 
-// Event listeners
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('Popup loaded');
+// // Event listeners
+// document.addEventListener('DOMContentLoaded', function() {
+//   console.log('Popup loaded');
   
-  // Connect to background script
-  connectToBackground();
+//   // Connect to background script
+//   connectToBackground();
   
-  // Load saved language preferences
-  chrome.storage.sync.get(['fromLang', 'toLang', 'ttsEnabled'], function(result) {
-    if (result.fromLang) fromLangSelect.value = result.fromLang;
-    if (result.toLang) toLangSelect.value = result.toLang;
+//   // Load saved language preferences
+//   chrome.storage.sync.get(['fromLang', 'toLang', 'ttsEnabled'], function(result) {
+//     if (result.fromLang) fromLangSelect.value = result.fromLang;
+//     if (result.toLang) toLangSelect.value = result.toLang;
     
-    // Set TTS toggle state
-    const ttsEnabled = result.ttsEnabled !== undefined ? result.ttsEnabled : false;
-    ttsToggle.checked = ttsEnabled;
-    window.azureAPI.setTtsEnabled(ttsEnabled);
-  });
+//     // Set TTS toggle state
+//     const ttsEnabled = result.ttsEnabled !== undefined ? result.ttsEnabled : false;
+//     ttsToggle.checked = ttsEnabled;
+//     window.azureAPI.setTtsEnabled(ttsEnabled);
+//   });
   
-  // Setup button click handlers
-  startBtn.addEventListener('click', startCapture);
-  stopBtn.addEventListener('click', stopCapture);
-  settingsButton.addEventListener('click', openSettings);
+//   // Setup button click handlers
+//   startBtn.addEventListener('click', startCapture);
+//   stopBtn.addEventListener('click', stopCapture);
+//   settingsButton.addEventListener('click', openSettings);
   
-  // TTS toggle handler
-  ttsToggle.addEventListener('change', function() {
-    const enabled = ttsToggle.checked;
-    window.azureAPI.setTtsEnabled(enabled);
+//   // TTS toggle handler
+//   ttsToggle.addEventListener('change', function() {
+//     const enabled = ttsToggle.checked;
+//     window.azureAPI.setTtsEnabled(enabled);
     
-    // Save preference
-    chrome.storage.sync.set({ ttsEnabled: enabled });
-  });
-});
+//     // Save preference
+//     chrome.storage.sync.set({ ttsEnabled: enabled });
+//   });
+// });
 
 // Handle messages from the background script
 function handleMessage(message) {

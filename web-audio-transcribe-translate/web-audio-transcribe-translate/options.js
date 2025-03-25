@@ -12,7 +12,7 @@ const statusMessage = document.getElementById('status-message');
 
 // Default settings
 const DEFAULT_SETTINGS = {
-  subscriptionKey: "Fj1KPt7grC6bAkNja7daZUstpP8wZTXsV6Zjr2FOxkO7wsBQ5SzQJQQJ99BCACHYHv6XJ3w3AAAAACOGL3Xg",
+  subscriptionKey: "",
   region: "eastus2",
   translatorEndpoint: "https://ai-aihackthonhub282549186415.cognitiveservices.azure.com/translator/text/v3.0/translate",
   bufferSize: 4096,
