@@ -3,22 +3,23 @@ from openai import AzureOpenAI
 from dotenv import load_dotenv
 from pathlib import Path
 
-# Load the .env file from the parent directory
-env_path = Path(__file__).resolve().parent.parent / ".env"
-load_dotenv(dotenv_path=env_path)
 
-# Now you can access environment variables
-api_key = os.getenv("AZURE_API_KEY")
-region = os.getenv("AZURE_REGION")
-gpt4 = os.getenv("GPT4_ENDPOINT")
+# Load environment variables from .env file
+parent_dir = Path(__file__).resolve().parent.parent
 
-print(f"API Key: {api_key}, Region: {region}")  # Debugging check
+# Load environment variables from .env file in the parent directory
+dotenv_path = parent_dir / '.env'
+load_dotenv(dotenv_path=dotenv_path)
 
+# Read environment variables
+api_key = os.getenv('AZURE_API_KEY')
+gpt4 = os.getenv('MODELS_ENDPOINT')
+azure_region = os.getenv('AZURE_REGION')
 
 
 client = AzureOpenAI(
     api_key= api_key, 
-    api_version="2024-10-21",
+    api_version="2025-01-01-preview",
     azure_endpoint = gpt4,
     )
 
@@ -26,10 +27,10 @@ client = AzureOpenAI(
 # client = AzureOpenAI()
 
 completion = client.chat.completions.create(
-  model="gpt-4o", # Replace with your model dpeloyment name.
+  model="gpt-4", # Replace with your model dpeloyment name.
   messages=[
     {"role": "system", "content": "You are a helpful assistant."},
-    {"role": "user", "content": "When was Microsoft founded?"}
+    {"role": "user", "content": "When was google founded"}
   ]
 )
 
