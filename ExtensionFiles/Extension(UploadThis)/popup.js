@@ -4,7 +4,9 @@ const startBtn = document.getElementById('start-btn');
 const stopBtn = document.getElementById('stop-btn');
 const fromLangSelect = document.getElementById('from-lang');
 const toLangSelect = document.getElementById('to-lang');
+const transcriptionpanelDiv = document.getElementById('transcription-panel');
 const transcriptionDiv = document.getElementById('transcription');
+const translationpanelDiv = document.getElementById('translation-panel');
 const translationDiv = document.getElementById('translation');
 const statusDiv = document.getElementById('status');
 const audioLevelBar = document.getElementById('audio-level-bar');
@@ -393,7 +395,7 @@ async function handleFinalResult(text) {
   transcriptionElem.classList.add('final');
   transcriptionElem.textContent = text;
   transcriptionDiv.appendChild(transcriptionElem);
-  transcriptionDiv.scrollTop = transcriptionDiv.scrollHeight;
+  transcriptionpanelDiv.scrollTop = transcriptionpanelDiv.scrollHeight;
   
   // Translate the text
   try {
@@ -410,7 +412,7 @@ async function handleFinalResult(text) {
     translationElem.classList.add('final');
     translationElem.textContent = translatedText;
     translationDiv.appendChild(translationElem);
-    translationDiv.scrollTop = translationDiv.scrollHeight;
+    translationpanelDiv.scrollTop = translationpanelDiv.scrollHeight;
   } catch (error) {
     console.error('Translation error:', error);
   }

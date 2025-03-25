@@ -123,6 +123,7 @@ button:disabled {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 12px;
+    padding-top:16px;
     overflow-y: auto;
 }
 
@@ -309,11 +310,11 @@ input:checked + .toggle-slider:before {
   </div>
   
   <div class="transcription-area">
-    <div class="panel">
+    <div class="panel" id="transcription-panel">
       <div class="panel-header">Original Text</div>
       <div id="transcription"></div>
     </div>
-    <div class="panel">
+    <div class="panel" id="translation-panel">
       <div class="panel-header">Translation</div>
       <div id="translation"></div>
     </div>
