@@ -6,182 +6,254 @@
   <title>Web Audio Transcribe & Translate</title>
   <script src="direct-api.js"></script>
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 15px;
-      width: 400px;
-      height: 500px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      background-color: #f5f5f5;
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-    h1 {
-      font-size: 18px;
-      margin: 0;
-      color: #2c3e50;
-    }
-    .settings-button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 20px;
-    }
-    .controls {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 15px;
-    }
-    .language-selectors {
-      display: flex;
-      gap: 10px;
-    }
-    select {
-      padding: 5px;
-      border-radius: 4px;
-      border: 1px solid #ddd;
-    }
-    button {
-      padding: 8px 12px;
-      border-radius: 4px;
-      border: none;
-      background-color: #3498db;
-      color: white;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    button:hover {
-      background-color: #2980b9;
-    }
-    button:disabled {
-      background-color: #95a5a6;
-      cursor: not-allowed;
-    }
-    .transcription-area {
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
-      gap: 10px;
-      overflow: hidden;
-    }
-    .panel {
-      flex: 1;
-      background-color: white;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      padding: 10px;
-      overflow-y: auto;
-    }
-    .panel-header {
-      font-weight: bold;
-      margin-bottom: 5px;
-      color: #2c3e50;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 5px;
-    }
-    .interim {
-      color: #7f8c8d;
-      font-style: italic;
-    }
-    .final {
-      color: #000;
-      margin-bottom: 8px;
-    }
-    .status {
-      text-align: center;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    .status.recording {
-      color: #e74c3c;
-      animation: pulse 1.5s infinite;
-    }
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.5; }
-      100% { opacity: 1; }
-    }
-    .audio-level {
-      height: 10px;
-      background-color: #eee;
-      border-radius: 5px;
-      margin-top: 10px;
-      overflow: hidden;
-    }
-    .audio-level-bar {
-      height: 100%;
-      background-color: #3498db;
-      width: 0%;
-      transition: width 0.1s ease;
-    }
-    .error-message {
-      background-color: #fadbd8;
-      color: #e74c3c;
-      padding: 8px;
-      border-radius: 4px;
-      margin-bottom: 10px;
-    }
-    .info-message {
-      background-color: #d4edda;
-      color: #155724;
-      padding: 8px;
-      border-radius: 4px;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-    .tts-toggle {
-      display: flex;
-      align-items: center;
-      margin-top: 10px;
-      justify-content: center;
-      gap: 8px;
-    }
-    .toggle-switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 24px;
-    }
-    .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-    .toggle-slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: .4s;
-      border-radius: 24px;
-    }
-    .toggle-slider:before {
-      position: absolute;
-      content: "";
-      height: 16px;
-      width: 16px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      transition: .4s;
-      border-radius: 50%;
-    }
-    input:checked + .toggle-slider {
-      background-color: #2196F3;
-    }
-    input:checked + .toggle-slider:before {
-      transform: translateX(26px);
-    }
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap');
+
+:root {
+    --primary-color: #4A3C30;
+    --secondary-color: #756555;
+    --background-color: #EDE5DC;
+    --surface-color: #FFFCF9;
+    --border-color: #C4B6A5;
+    --text-primary: #362A20;
+    --text-secondary: #5D5042;
+    --accent-gold: #B89F7B;
+}
+
+body {
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    margin: 0;
+    padding: 12px;
+    width: 400px;
+    height: 500px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    gap: 12px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+h1 {
+    font-size: 1rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.settings-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    padding: 4px;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.language-selectors {
+    display: flex;
+    gap: 8px;
+    flex-grow: 1;
+}
+
+select {
+    padding: 6px 12px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    background: var(--surface-color);
+    font-family: 'Space Grotesk';
+    font-size: 0.8rem;
+    flex: 1;
+    min-width: 0;
+    height: 32px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+button {
+    padding: 6px 12px;
+    border-radius: 16px;
+    border: none;
+    background: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.8rem;
+    height: 32px;
+    min-width: 60px;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background: var(--secondary-color);
+}
+
+button:disabled {
+    background: #C4B6A5;
+}
+
+.transcription-area {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 12px;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.panel {
+    flex: 1;
+    min-height: 0;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    overflow-y: auto;
+}
+
+.panel-header {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--primary-color);
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.interim {
+    color: var(--text-secondary);
+    font-style: italic;
+    opacity: 0.8;
+    font-size: 0.85rem;
+}
+
+.final {
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    line-height: 1.5;
+    font-size: 0.9rem;
+}
+
+.status {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.status.recording {
+    color: #C45959;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.audio-level {
+    height: 6px;
+    background-color: var(--border-color);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.audio-level-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-gold));
+    width: 0%;
+    transition: width 0.1s ease;
+}
+
+.error-message {
+    background-color: #FBEBE9;
+    color: #B44D4D;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+}
+
+.info-message {
+    background-color: #EDF7ED;
+    color: #2B5E2B;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+.tts-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border-color);
+    transition: .4s;
+    border-radius: 20px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: var(--primary-color);
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+}
+
+.panel::-webkit-scrollbar {
+    width: 4px;
+}
+
+.panel::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 2px;
+}
   </style>
 </head>
 <body>
