@@ -1,15 +1,22 @@
-subscription_key = "Fj1KPt7grC6bAkNja7daZUstpP8wZTXsV6Zjr2FOxkO7wsBQ5SzQJQQJ99BCACHYHv6XJ3w3AAAAACOGL3Xg"  # Replace with your actual subscription key
+from dotenv import load_dotenv
 import requests
 import uuid
 import json
 import os
 import tempfile
 from datetime import datetime
+parent_dir = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env file in the parent directory
+dotenv_path = parent_dir / '.env'
+load_dotenv(dotenv_path=dotenv_path)
+
+subscription_key = os.getenv('AZURE_API_KEY')  # Replace with your actual subscription key
 
 def translate_text(text, from_lang='en', to_lang='es'):
     # Your endpoint and subscription key
     endpoint = "https://ai-aihackthonhub282549186415.cognitiveservices.azure.com/translator/text/v3.0/translate"
-    subscription_key = "Fj1KPt7grC6bAkNja7daZUstpP8wZTXsV6Zjr2FOxkO7wsBQ5SzQJQQJ99BCACHYHv6XJ3w3AAAAACOGL3Xg"  # Replace with your actual subscription key
+    subscription_key = os.getenv('AZURE_API_KEY')  # Replace with your actual subscription key
     
     # Set up the headers with subscription key
     headers = {
@@ -83,7 +90,7 @@ def text_to_speech(text, language="en-US", voice="en-US-JennyNeural"):
         # Use a default region or extract from the full URL
         region = "eastus2"  # Replace with your actual region if you know it
     
-    subscription_key = "Fj1KPt7grC6bAkNja7daZUstpP8wZTXsV6Zjr2FOxkO7wsBQ5SzQJQQJ99BCACHYHv6XJ3w3AAAAACOGL3Xg"  # Replace with your actual subscription key  # Replace with your actual subscription key
+    subscription_key = os.getenv('AZURE_API_KEY')  # Replace with your actual subscription key  # Replace with your actual subscription key
     
     # Generate output filename
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -139,7 +146,7 @@ def speech_to_text(audio_file_path, language="en-US"):
     """
     # Your endpoint and subscription key
     endpoint = "https://ai-aihackthonhub282549186415.cognitiveservices.azure.com/speechtotext/transcriptions:transcribe"
-    subscription_key = "Fj1KPt7grC6bAkNja7daZUstpP8wZTXsV6Zjr2FOxkO7wsBQ5SzQJQQJ99BCACHYHv6XJ3w3AAAAACOGL3Xg"  # Replace with your actual subscription key
+    subscription_key = os.getenv('AZURE_API_KEY')  # Replace with your actual subscription key
     
     # Set up the API version
     params = {
