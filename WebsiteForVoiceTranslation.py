@@ -8,10 +8,16 @@ import threading
 import time
 from datetime import datetime
 from flask_socketio import SocketIO, emit
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Azure subscription key from your code
-subscription_key = "Fj1KPt7grC6bAkNja7daZUstpP8wZTXsV6Zjr2FOxkO7wsBQ5SzQJQQJ99BCACHYHv6XJ3w3AAAAACOGL3Xg"
-region = "eastus2"  # Assumed from your endpoint
+#subscription_key = "Fj1KPt7grC6bAkNja7daZUstpP8wZTXsV6Zjr2FOxkO7wsBQ5SzQJQQJ99BCACHYHv6XJ3w3AAAAACOGL3Xg"
+#region = "eastus2"  # Assumed from your endpoint
+
+subscription_key = os.getenv("AZURE_API_KEY")
+region = os.getenv("AZURE_REGION") 
 
 # Initialize Flask app
 app = Flask(__name__)
