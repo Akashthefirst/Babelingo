@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "Web Audio Transcribe & Translate",
+  "version": "1.0",
+  "description": "Capture, transcribe, and translate audio from web pages in real-time",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabCapture"
+  ],
+  "host_permissions": [
+    "https://*.microsoft.com/*",
+    "https://*.cognitive.microsoft.com/*", 
+    "https://ai-aihackthonhub282549186415.cognitiveservices.azure.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/icon-16.png",
+      "32": "images/icon-32.png",
+      "48": "images/icon-48.png",
+      "128": "images/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "images/icon-16.png",
+    "32": "images/icon-32.png",
+    "48": "images/icon-48.png",
+    "128": "images/icon-128.png"
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}

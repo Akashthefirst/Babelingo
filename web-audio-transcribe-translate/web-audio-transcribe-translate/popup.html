@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Audio Transcribe & Translate</title>
+  <script src="direct-api.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 15px;
+      width: 400px;
+      height: 500px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background-color: #f5f5f5;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    h1 {
+      font-size: 18px;
+      margin: 0;
+      color: #2c3e50;
+    }
+    .settings-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    .language-selectors {
+      display: flex;
+      gap: 10px;
+    }
+    select {
+      padding: 5px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    button {
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: none;
+      background-color: #3498db;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    button:disabled {
+      background-color: #95a5a6;
+      cursor: not-allowed;
+    }
+    .transcription-area {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      gap: 10px;
+      overflow: hidden;
+    }
+    .panel {
+      flex: 1;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      overflow-y: auto;
+    }
+    .panel-header {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #2c3e50;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 5px;
+    }
+    .interim {
+      color: #7f8c8d;
+      font-style: italic;
+    }
+    .final {
+      color: #000;
+      margin-bottom: 8px;
+    }
+    .status {
+      text-align: center;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .status.recording {
+      color: #e74c3c;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    .audio-level {
+      height: 10px;
+      background-color: #eee;
+      border-radius: 5px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+    .audio-level-bar {
+      height: 100%;
+      background-color: #3498db;
+      width: 0%;
+      transition: width 0.1s ease;
+    }
+    .error-message {
+      background-color: #fadbd8;
+      color: #e74c3c;
+      padding: 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .info-message {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .tts-toggle {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+      justify-content: center;
+      gap: 8px;
+    }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .toggle-slider {
+      background-color: #2196F3;
+    }
+    input:checked + .toggle-slider:before {
+      transform: translateX(26px);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Web Audio Transcribe & Translate</h1>
+    <button class="settings-button" id="settings-button" title="Settings">⚙️</button>
+  </div>
+  
+  <div class="info-message">
+    <p>Click "Start" to capture and translate audio from the current tab.</p>
+  </div>
+  
+  <div class="controls">
+    <div class="language-selectors">
+      <select id="from-lang">
+        <option value="en-US">English (US)</option>
+        <option value="es-ES">Spanish</option>
+        <option value="fr-FR">French</option>
+        <option value="de-DE">German</option>
+        <option value="it-IT">Italian</option>
+        <option value="ja-JP">Japanese</option>
+        <option value="ko-KR">Korean</option>
+        <option value="pt-BR">Portuguese</option>
+        <option value="ru-RU">Russian</option>
+        <option value="zh-CN">Chinese</option>
+      </select>
+      <select id="to-lang">
+        <option value="es">Spanish</option>
+        <option value="en">English</option>
+        <option value="fr">French</option>
+        <option value="de">German</option>
+        <option value="it">Italian</option>
+        <option value="ja">Japanese</option>
+        <option value="ko">Korean</option>
+        <option value="pt">Portuguese</option>
+        <option value="ru">Russian</option>
+        <option value="zh">Chinese</option>
+      </select>
+    </div>
+    
+    <div class="action-buttons">
+      <button id="start-btn">Start</button>
+      <button id="stop-btn" disabled>Stop</button>
+    </div>
+  </div>
+  
+  <div class="tts-toggle">
+    <span>Text-to-Speech:</span>
+    <label class="toggle-switch">
+      <input type="checkbox" id="tts-toggle">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+  
+  <div class="transcription-area">
+    <div class="panel">
+      <div class="panel-header">Original Text</div>
+      <div id="transcription"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">Translation</div>
+      <div id="translation"></div>
+    </div>
+  </div>
+  
+  <div class="status" id="status">Ready to start</div>
+  
+  <div class="audio-level">
+    <div class="audio-level-bar" id="audio-level-bar"></div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
