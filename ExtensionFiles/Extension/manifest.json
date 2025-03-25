@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Web Audio Transcribe & Translate",
+  "name": "Babelingo:-WebAudio Transcribe & Translate",
   "version": "1.0",
   "description": "Capture, transcribe, and translate audio from web pages in real-time",
   "permissions": [
