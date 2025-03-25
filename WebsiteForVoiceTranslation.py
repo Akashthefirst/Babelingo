@@ -238,158 +238,249 @@ if __name__ == '__main__':
     <title>Real-time Transcription and Translation</title>
     <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-        }
-        .controls {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .language-select {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        select, button {
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            outline: none;
-        }
-        button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        button:disabled {
-            background-color: #95a5a6;
-            cursor: not-allowed;
-        }
-        .transcription-area {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        .panel {
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            min-height: 200px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .panel h3 {
-            margin-top: 0;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-            color: #2c3e50;
-        }
-        .status {
-            text-align: center;
-            margin-top: 20px;
-            font-weight: bold;
-        }
-        .recording {
-            animation: pulse 1.5s infinite;
-            color: #e74c3c;
-        }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        
-        /* New styles for improved UI */
-        .interim {
-            color: #666;
-            font-style: italic;
-        }
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap');
 
-        .final {
-            color: #000;
-            font-weight: normal;
-        }
+:root {
+    --primary-color: #4A3C30;    /* Dark espresso */
+    --secondary-color: #756555;  /* Warm taupe */
+    --background-color: #EDE5DC; /* Parchment background */
+    --surface-color: #FDF8F3;    /* Vanilla cream */
+    --border-color: #C4B6A5;     /* Weathered wood */
+    --text-primary: #362A20;     /* Rich chocolate */
+    --text-secondary: #5D5042;   /* Mocha brown */
+    --accent-gold: #B89F7B;      /* Aged brass */
+}
 
-        .error-message {
-            color: #e74c3c;
-            background-color: #fadbd8;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
+body {
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin: 0;
+    padding: 20px;
+    background-color: var(--background-color);
+}
 
-        .audio-level {
-            height: 20px;
-            background-color: #eee;
-            border-radius: 10px;
-            margin-top: 10px;
-            overflow: hidden;
-            position: relative;
-        }
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: var(--surface-color);
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 12px 36px rgba(74, 60, 48, 0.1);
+    border: 1px solid var(--border-color);
+}
 
-        .audio-level-bar {
-            height: 100%;
-            background-color: #3498db;
-            width: 0%;
-            transition: width 0.1s ease;
-        }
+h1 {
+    text-align: center;
+    color: var(--text-primary);
+    margin-bottom: 40px;
+    font-weight: 600;
+    font-size: 2.2rem;
+    letter-spacing: -0.75px;
+}
 
-        .settings-panel {
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
+.controls {
+    margin-bottom: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 20px;
+    background: rgba(196, 182, 165, 0.08);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+}
 
-        .hidden {
-            display: none;
-        }
-        
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .transcription-area {
-                grid-template-columns: 1fr;
-            }
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .language-select {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
+.language-select {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+select, button {
+    padding: 12px 24px;
+    border-radius: 999px;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+select {
+    background: var(--surface-color) url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234A3C30' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") no-repeat right 16px center/16px;
+    border: 2px solid var(--border-color);
+    appearance: none;
+    padding-right: 48px;
+    font-family: 'Space Grotesk';
+    color: var(--text-primary);
+}
+
+button {
+    background: linear-gradient(145deg, var(--primary-color), #635343);
+    color: white;
+    border: none;
+    font-weight: 500;
+    letter-spacing: 0.25px;
+    box-shadow: 0 4px 16px rgba(74, 60, 48, 0.12),
+                inset 0 1px 1px rgba(255, 255, 255, 0.15);
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(74, 60, 48, 0.18),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    background: linear-gradient(145deg, #635343, var(--primary-color));
+}
+
+button:disabled {
+    background: #C4B6A5;
+    box-shadow: none;
+}
+
+.transcription-area {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.panel {
+    background: var(--surface-color);
+    border: 2px solid var(--border-color);
+    border-radius: 20px;
+    padding: 24px;
+    min-height: 200px;
+    max-height: 400px;
+    overflow-y: auto;
+    box-shadow: inset 0 2px 4px rgba(214, 202, 189, 0.1);
+}
+
+.panel h3 {
+    text-align: center;
+    margin-top: 0;
+    padding-bottom: 20px;
+    border-bottom: none;
+    color: var(--primary-color);
+    font-weight: 500;
+    font-size: 1.3rem;
+    letter-spacing: -0.25px;
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.panel h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: var(--accent-gold);
+}
+
+.status {
+    text-align: center;
+    margin: 24px 0;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.25px;
+}
+
+.recording {
+    animation: pulse 1.5s infinite;
+    color: #C45959;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.interim {
+    color: var(--text-secondary);
+    font-style: italic;
+    opacity: 0.9;
+    font-weight: 300;
+    letter-spacing: -0.1px;
+}
+
+.final {
+    color: var(--text-primary);
+    border-left: 3px solid var(--accent-gold);
+    padding-left: 16px;
+    margin: 14px 0;
+    line-height: 1.7;
+    font-weight: 400;
+    font-size: 1.05rem;
+}
+
+.error-message {
+    color: #B44D4D;
+    background-color: #FBEBE9;
+    padding: 14px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #F4C7C3;
+    font-weight: 400;
+}
+
+.audio-level {
+    height: 8px;
+    background-color: var(--border-color);
+    border-radius: 4px;
+    margin: 24px 0;
+}
+
+.audio-level-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-gold));
+    width: 0%;
+    transition: width 0.1s ease;
+}
+
+.settings-panel {
+    margin-top: 24px;
+    padding: 24px;
+    border: 2px solid var(--border-color);
+    border-radius: 20px;
+    background: rgba(237, 229, 220, 0.6);
+    backdrop-filter: blur(8px);
+}
+
+.hidden {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 24px;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    .transcription-area {
+        grid-template-columns: 1fr;
+    }
+    
+    .controls {
+        padding: 16px;
+        gap: 12px;
+    }
+    
+    .language-select {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .panel h3 {
+        font-size: 1.2rem;
+    }
+}
+
     </style>
 </head>
 <body>
