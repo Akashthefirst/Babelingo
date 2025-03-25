@@ -113,7 +113,6 @@ python WebsiteForVoiceTranslation.py
 ✅ **Supports real-time speech transcription and translation.**\
 ✅ **Integrates seamlessly with Azure Cognitive Services and OpenAI.**
 
-🔗 **Try it now and experience real-time AI-powered translation!** 🚀
 
 
 
