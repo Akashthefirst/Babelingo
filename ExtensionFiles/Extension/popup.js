@@ -26,7 +26,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!items.subscriptionKey) {
       statusDiv.textContent = "Please set your Azure API key in the extension settings.";
       statusDiv.classList.add('error');
-      startBtn.disabled = true; // Optionally disable start functionality
+      startBtn.disabled = true; 
+    
+      // Automatically open the settings page
+      setTimeout(() => {
+        chrome.runtime.openOptionsPage();
+      }, 2000); // Opens settings after 2 seconds
+      
       return;
     }
     
