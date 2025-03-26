@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Audio Translator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4A3C30;    /* Dark espresso */
+      --secondary-color: #756555;  /* Warm taupe */
+      --background-color: #EDE5DC; /* Parchment background */
+      --surface-color: #FDF8F3;    /* Vanilla cream */
+      --border-color: #C4B6A5;     /* Weathered wood */
+      --text-primary: #362A20;     /* Rich chocolate */
+      --text-secondary: #5D5042;   /* Mocha brown */
+      --accent-gold: #B89F7B;      /* Aged brass */
+      --border-radius: 12px;
+      --box-shadow: 0 4px 12px rgba(74, 60, 48, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Space Grotesk', -apple-system, system-ui, sans-serif;
+    }
+    
+    body {
+      width: 380px;
+      max-height: 600px;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    
+    /* Header styles */
+    .header {
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      background-color: var(--surface-color);
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    .header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: -0.5px;
+    }
+    
+    .logo-icon {
+      color: var(--primary-color);
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .icon-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--text-secondary);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+    
+    .icon-button:hover {
+      background-color: rgba(196, 182, 165, 0.2);
+      color: var(--primary-color);
+    }
+    
+    /* Background active message */
+    .background-active {
+      background-color: rgba(184, 159, 123, 0.1);
+      border-left: 3px solid var(--accent-gold);
+      padding: 12px 16px;
+      margin: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      color: var(--primary-color);
+      animation: fadeIn 0.3s ease;
+    }
+    
+    /* Controls section */
+    .control-panel {
+      background-color: var(--surface-color);
+      margin: 0 16px 12px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+    
+    .languages {
+      display: flex;
+      padding: 16px;
+      gap: 12px;
+      border-bottom: 1px solid rgba(196, 182, 165, 0.2);
+    }
+    
+    .lang-select {
+      flex: 1;
+      position: relative;
+    }
+    
+    .lang-select-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      display: block;
+    }
+    
+    .lang-select select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background-color: var(--surface-color);
+      font-size: 14px;
+      color: var(--text-primary);
+      appearance: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .lang-select select:hover {
+      border-color: var(--accent-gold);
+    }
+    
+    .lang-select select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(74, 60, 48, 0.1);
+    }
+    
+    .lang-select::after {
+      content: '\f078';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      right: 12px;
+      bottom: 11px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      pointer-events: none;
+    }
+    
+    /* Active features panel */
+    .active-features {
+      padding: 16px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .feature-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background-color: rgba(184, 159, 123, 0.1);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 13px;
+      color: var(--primary-color);
+      font-weight: 500;
+    }
+    
+    .feature-badge i {
+      color: var(--accent-gold);
+    }
+    
+    /* Action buttons */
+    .action-buttons {
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    
+    .button {
+      flex: 1;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    .button.primary {
+      background: var(--primary-color);
+      color: white;
+      box-shadow: 0 4px 16px rgba(74, 60, 48, 0.12),
+                inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    }
+    
+    .button.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(74, 60, 48, 0.18),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    }
+    
+    .button.primary:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+      );
+      z-index: -1;
+      transition: left 0.7s ease;
+    }
+    
+    .button.primary:hover:before {
+      left: 100%;
+    }
+    
+    .button.secondary {
+      background-color: rgba(196, 182, 165, 0.2);
+      color: var(--text-primary);
+    }
+    
+    .button.secondary:hover {
+      background-color: rgba(196, 182, 165, 0.3);
+    }
+    
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    /* Transcription area */
+    .transcription-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      margin: 0 16px 16px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      overflow: hidden;
+      background-color: var(--surface-color);
+      border: 1px solid var(--border-color);
+      max-height: 300px;
+    }
+    
+    .panel-tabs {
+      display: flex;
+      border-bottom: 1px solid rgba(196, 182, 165, 0.2);
+      position: sticky;
+      top: 0;
+      background: var(--surface-color);
+      z-index: 5;
+    }
+    
+    .panel-tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+    
+    .panel-tab.active {
+      color: var(--primary-color);
+    }
+    
+    .panel-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 25%;
+      width: 50%;
+      height: 3px;
+      background-color: var(--accent-gold);
+      border-radius: 3px 3px 0 0;
+    }
+    
+    .panels {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    
+    .panel {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+      max-height: 242px; /* Ensure panels can scroll */
+    }
+    
+    .panel::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .panel::-webkit-scrollbar-track {
+      background: rgba(196, 182, 165, 0.1);
+    }
+    
+    .panel::-webkit-scrollbar-thumb {
+      background: var(--accent-gold);
+      border-radius: 4px;
+    }
+    
+    .panel::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-color);
+    }
+    
+    .panel-hidden {
+      display: none;
+    }
+    
+    .transcription-item {
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(196, 182, 165, 0.1);
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-primary);
+    }
+    
+    .transcription-item:last-child {
+      border-bottom: none;
+    }
+    
+    .interim {
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    
+    /* Footer area */
+    .footer {
+      padding: 12px 16px;
+      background-color: var(--surface-color);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-top: 1px solid var(--border-color);
+      border-radius: 0 0 var(--border-radius) var(--border-radius);
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
+    }
+    
+    .status {
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 20px;
+      color: var(--text-secondary);
+    }
+    
+    .status.recording {
+      color: #C45959;
+    }
+    
+    .status .pulse {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #C45959;
+      animation: pulse 1.5s infinite;
+    }
+    
+    .audio-level {
+      height: 4px;
+      background-color: rgba(196, 182, 165, 0.2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .audio-level-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-gold) 100%);
+      width: 0%;
+      transition: width 0.1s ease;
+      border-radius: 2px;
+    }
+    
+    /* Error message */
+    .error-container {
+      position: absolute;
+      top: 70px;
+      left: 16px;
+      right: 16px;
+      z-index: 100;
+    }
+    
+    .error-message {
+      background-color: rgba(196, 89, 89, 0.1);
+      border-left: 3px solid #C45959;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #C45959;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .error-close {
+      background: none;
+      border: none;
+      color: #C45959;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    
+    /* Animations */
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Server status message */
+    #server-status {
+      background-color: rgba(249, 199, 79, 0.1);
+      border-left: 3px solid #F9C74F;
+      padding: 12px 16px;
+      margin: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #856404;
+      animation: fadeIn 0.3s ease;
+    }
+
+    /* Info message */
+    #info-message {
+      background-color: rgba(184, 159, 123, 0.1);
+      border-left: 3px solid var(--accent-gold);
+      padding: 12px 16px;
+      margin: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--text-primary);
+      animation: fadeIn 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1><i class="fas fa-headphones logo-icon"></i> Web Audio Translator</h1>
+    <div class="header-actions">
+      <button id="minimize-btn" class="icon-button" title="Minimize"><i class="fas fa-minus"></i></button>
+      <button id="settings-button" class="icon-button" title="Settings"><i class="fas fa-cog"></i></button>
+    </div>
+  </div>
+  
+  <div class="info-message" id="info-message">
+    <i class="fas fa-info-circle"></i> Click "Start Capture" to translate audio from the current tab.
+  </div>
+  
+  <div id="server-status" class="warning-message" style="display:none;">
+    <i class="fas fa-exclamation-triangle"></i> Flask server is not running. Please start the server first.
+  </div>
+  
+  <div id="background-mode" class="background-active" style="display:none;">
+    <i class="fas fa-check-circle"></i> Running in background mode
+  </div>
+  
+  <div class="error-container" id="error-container">
+    <!-- Error messages will be inserted here -->
+  </div>
+  
+  <div class="control-panel">
+    <div class="languages">
+      <div class="lang-select">
+        <span class="lang-select-label">From Language</span>
+        <select id="from-lang">
+          <optgroup label="Global Languages">
+            <option value="en-US">English (US)</option>
+            <option value="es-ES">Spanish</option>
+            <option value="fr-FR">French</option>
+            <option value="de-DE">German</option>
+            <option value="it-IT">Italian</option>
+            <option value="ja-JP">Japanese</option>
+            <option value="ko-KR">Korean</option>
+            <option value="pt-BR">Portuguese</option>
+            <option value="ru-RU">Russian</option>
+            <option value="zh-CN">Chinese</option>
+          </optgroup>
+          <optgroup label="Indian Languages">
+            <option value="hi-IN">Hindi</option>
+            <option value="ta-IN">Tamil</option>
+            <option value="te-IN">Telugu</option>
+            <option value="mr-IN">Marathi</option>
+            <option value="gu-IN">Gujarati</option>
+            <option value="bn-IN">Bengali</option>
+            <option value="kn-IN">Kannada</option>
+            <option value="ml-IN">Malayalam</option>
+            <option value="pa-IN">Punjabi</option>
+            <option value="ur-IN">Urdu</option>
+          </optgroup>
+        </select>
+      </div>
+      
+      <div class="lang-select">
+        <span class="lang-select-label">To Language</span>
+        <select id="to-lang">
+          <optgroup label="Global Languages">
+            <option value="en">English</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="it">Italian</option>
+            <option value="ja">Japanese</option>
+            <option value="ko">Korean</option>
+            <option value="pt">Portuguese</option>
+            <option value="ru">Russian</option>
+            <option value="zh">Chinese</option>
+          </optgroup>
+          <optgroup label="Indian Languages">
+            <option value="hi">Hindi</option>
+            <option value="ta">Tamil</option>
+            <option value="te">Telugu</option>
+            <option value="mr">Marathi</option>
+            <option value="gu">Gujarati</option>
+            <option value="bn">Bengali</option>
+            <option value="kn">Kannada</option>
+            <option value="ml">Malayalam</option>
+            <option value="pa">Punjabi</option>
+            <option value="ur">Urdu</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+    
+    <!-- Active features section instead of toggles -->
+    <div class="active-features">
+      <div class="feature-badge">
+        <i class="fas fa-volume-up"></i> Text-to-Speech
+      </div>
+      <div class="feature-badge">
+        <i class="fas fa-closed-captioning"></i> Captions
+      </div>
+      <div class="feature-badge">
+        <i class="fas fa-globe"></i> Background Mode
+      </div>
+    </div>
+    
+    <div class="action-buttons">
+      <button id="start-btn" class="button primary">
+        <i class="fas fa-play"></i> Start Capture
+      </button>
+      <button id="stop-btn" class="button secondary" disabled>
+        <i class="fas fa-stop"></i> Stop
+      </button>
+    </div>
+  </div>
+  
+  <div class="transcription-area">
+    <div class="panel-tabs">
+      <button class="panel-tab active" id="original-tab">Original</button>
+      <button class="panel-tab" id="translation-tab">Translation</button>
+    </div>
+    
+    <div class="panels">
+      <div class="panel" id="original-panel">
+        <div id="transcription"></div>
+      </div>
+      <div class="panel panel-hidden" id="translation-panel">
+        <div id="translation"></div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <div class="status" id="status">Ready to start</div>
+    <div class="audio-level">
+      <div class="audio-level-bar" id="audio-level-bar"></div>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

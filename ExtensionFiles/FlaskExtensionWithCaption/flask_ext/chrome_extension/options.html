@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Audio Transcribe & Translate Settings</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    h1 {
+      color: #2c3e50;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+    .section {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #2c3e50;
+      margin-top: 0;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .checkbox-container {
+      margin-bottom: 15px;
+    }
+    input[type="checkbox"] {
+      margin-right: 8px;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    .api-key-input {
+      font-family: monospace;
+    }
+    .status-message {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    .info-text {
+      color: #6c757d;
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
+    .server-info {
+      background-color: #e2f0fd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    code {
+      background-color: #f8f9fa;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+    .language-section {
+      margin-top: 20px;
+    }
+    .language-section h3 {
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+    .language-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+    }
+    .language-item {
+      display: flex;
+      align-items: center;
+    }
+    .language-item label {
+      margin-bottom: 0;
+      font-weight: normal;
+    }
+  </style>
+</head>
+<body>
+  <h1>Web Audio Transcribe & Translate Settings</h1>
+  
+  <div class="server-info">
+    <h2>Flask Server Information</h2>
+    <p>This extension requires the Flask server to be running locally.</p>
+    <p>Server Status: <span id="server-status">Checking...</span></p>
+    <p>To start the server, navigate to the <code>flask_backend</code> folder and run:</p>
+    <code>python app.py</code>
+    <p class="info-text">Make sure you have the required Python packages installed.</p>
+  </div>
+  
+  <div class="section">
+    <h2>API Information</h2>
+    <p>The extension uses the following Azure API details:</p>
+    
+    <div>
+      <label for="subscription-key">Azure Subscription Key</label>
+      <input type="text" id="subscription-key" class="api-key-input" value="Fj1KPt7grC6bAkNja7daZUstpP8wZTXsV6Zjr2FOxkO7wsBQ5SzQJQQJ99BCACHYHv6XJ3w3AAAAACOGL3Xg" readonly />
+    </div>
+    
+    <div>
+      <label for="region">Azure Region</label>
+      <input type="text" id="region" value="eastus2" readonly />
+    </div>
+    
+    <div>
+      <label for="translator-endpoint">Translator Endpoint</label>
+      <input type="text" id="translator-endpoint" value="https://ai-aihackthonhub282549186415.cognitiveservices.azure.com/translator/text/v3.0/translate" readonly />
+    </div>
+    
+    <div>
+      <label for="tts-endpoint">TTS Endpoint</label>
+      <input type="text" id="tts-endpoint" value="https://eastus2.tts.speech.microsoft.com/cognitiveservices/v1" readonly />
+    </div>
+    
+    <p class="info-text">The TTS API is now called directly from the extension for improved performance.</p>
+  </div>
+  
+  <div class="section">
+    <h2>Default Languages</h2>
+    
+    <div>
+      <label for="default-from-lang">Default Source Language</label>
+      <select id="default-from-lang">
+        <optgroup label="Global Languages">
+          <option value="en-US">English (US)</option>
+          <option value="es-ES">Spanish</option>
+          <option value="fr-FR">French</option>
+          <option value="de-DE">German</option>
+          <option value="it-IT">Italian</option>
+          <option value="ja-JP">Japanese</option>
+          <option value="ko-KR">Korean</option>
+          <option value="pt-BR">Portuguese</option>
+          <option value="ru-RU">Russian</option>
+          <option value="zh-CN">Chinese</option>
+        </optgroup>
+        <optgroup label="Indian Languages">
+          <option value="hi-IN">Hindi</option>
+          <option value="ta-IN">Tamil</option>
+          <option value="te-IN">Telugu</option>
+          <option value="mr-IN">Marathi</option>
+          <option value="gu-IN">Gujarati</option>
+          <option value="bn-IN">Bengali</option>
+          <option value="kn-IN">Kannada</option>
+          <option value="ml-IN">Malayalam</option>
+          <option value="pa-IN">Punjabi</option>
+          <option value="ur-IN">Urdu</option>
+        </optgroup>
+      </select>
+    </div>
+    
+    <div>
+      <label for="default-to-lang">Default Target Language</label>
+      <select id="default-to-lang">
+        <optgroup label="Global Languages">
+          <option value="en">English</option>
+          <option value="es">Spanish</option>
+          <option value="fr">French</option>
+          <option value="de">German</option>
+          <option value="it">Italian</option>
+          <option value="ja">Japanese</option>
+          <option value="ko">Korean</option>
+          <option value="pt">Portuguese</option>
+          <option value="ru">Russian</option>
+          <option value="zh">Chinese</option>
+        </optgroup>
+        <optgroup label="Indian Languages">
+          <option value="hi">Hindi</option>
+          <option value="ta">Tamil</option>
+          <option value="te">Telugu</option>
+          <option value="mr">Marathi</option>
+          <option value="gu">Gujarati</option>
+          <option value="bn">Bengali</option>
+          <option value="kn">Kannada</option>
+          <option value="ml">Malayalam</option>
+          <option value="pa">Punjabi</option>
+          <option value="ur">Urdu</option>
+        </optgroup>
+      </select>
+    </div>
+  </div>
+  
+  <div class="section">
+    <h2>Audio Processing</h2>
+    
+    <div>
+      <label for="buffer-size">Audio Buffer Size</label>
+      <select id="buffer-size">
+        <option value="256">256 (lowest latency, may be unstable)</option>
+        <option value="512">512 (low latency)</option>
+        <option value="1024">1024 (balanced)</option>
+        <option value="2048">2048 (default)</option>
+        <option value="4096" selected>4096 (highest stability)</option>
+        <option value="8192">8192 (very high stability)</option>
+      </select>
+      <p class="info-text">Larger buffer sizes improve stability but increase latency.</p>
+    </div>
+    
+    <div>
+      <label for="processing-interval">Processing Interval (ms)</label>
+      <input type="number" id="processing-interval" min="500" max="5000" value="2000" />
+      <p class="info-text">How often to process audio batches.</p>
+    </div>
+  </div>
+  
+  <div class="section">
+    <h2>Text-to-Speech Settings</h2>
+    
+    <div class="checkbox-container">
+      <label>
+        <input type="checkbox" id="tts-enabled" checked />
+        Enable Text-to-Speech by default
+      </label>
+      <p class="info-text">When enabled, translations will be automatically spoken.</p>
+    </div>
+    
+    <div>
+      <label for="voice-gender">Preferred Voice Gender</label>
+      <select id="voice-gender">
+        <option value="female" selected>Female</option>
+        <option value="male">Male</option>
+      </select>
+      <p class="info-text">This setting affects the voices used for TTS.</p>
+    </div>
+  </div>
+  
+  <div class="section">
+    <h2>Display Settings</h2>
+    
+    <div>
+      <label for="max-history">Maximum Transcript History</label>
+      <input type="number" id="max-history" min="10" max="1000" value="100" />
+      <p class="info-text">The maximum number of transcriptions to keep in history.</p>
+    </div>
+    
+    <div>
+      <label for="font-size">Font Size</label>
+      <select id="font-size">
+        <option value="small">Small</option>
+        <option value="medium" selected>Medium</option>
+        <option value="large">Large</option>
+      </select>
+    </div>
+  </div>
+  
+  <button id="save-btn">Save Settings</button>
+  <div id="status-message" class="status-message" style="display: none;"></div>
+  
+  <script src="options.js"></script>
+</body>
+</html>
