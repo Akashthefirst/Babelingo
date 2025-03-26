@@ -139,7 +139,7 @@ python WebsiteForVoiceTranslation.py
 ✅ **The solution provides comprehensive support for real-time speech transcription and translation.**
 ✅ **Seamless integration with Azure Cognitive Services and OpenAI ensures optimal performance.**
 
-<div style="text-align: center">⁂</div>
+
 
 [^1]: https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/50665142/1b74e224-e775-4bbe-a45d-5ea451fb536d/README.md
 
