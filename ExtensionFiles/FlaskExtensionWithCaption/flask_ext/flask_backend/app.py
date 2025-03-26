@@ -10,7 +10,7 @@ import base64
 import time
 
 # Azure subscription key
-SUBSCRIPTION_KEY = "Fj1KPt7grC6bAkNja7daZUstpP8wZTXsV6Zjr2FOxkO7wsBQ5SzQJQQJ99BCACHYHv6XJ3w3AAAAACOGL3Xg"
+SUBSCRIPTION_KEY = os.getenv('AZURE_API_KEY') 
 REGION = "eastus2"
 TRANSLATOR_ENDPOINT = "https://ai-aihackthonhub282549186415.cognitiveservices.azure.com/translator/text/v3.0/translate"
 
